@@ -1,3 +1,7 @@
-struct YAJL {
-    var text = "Hello, World!"
+@_exported import yajl_objc
+
+public extension YAJLParser {
+}
+
+public extension YAJLDocument {
 }
