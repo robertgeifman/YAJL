@@ -75,6 +75,44 @@ NS_ASSUME_NONNULL_BEGIN
    @param dict Dictionary object was set for key on
  */
 - (void)document:(YAJLDocument *)document didSetObject:(id)object forKey:(id)key inDictionary:(NSDictionary *)dict;
+
+/*!
+   Parser did start dictionary.
+   @param parser Sender
+ */
+- (void)parserDidStartDictionary:(YAJLParser *)parser;
+
+/*!
+   Parser did end dictionary.
+   @param parser Sender
+ */
+- (void)parserDidEndDictionary:(YAJLParser *)parser;
+
+/*!
+   Parser did start array.
+   @param parser Sender
+ */
+- (void)parserDidStartArray:(YAJLParser *)parser;
+
+/*!
+   Parser did end array.
+   @param parser Sender
+ */
+- (void)parserDidEndArray:(YAJLParser *)parser;
+
+/*!
+   Parser did map key.
+   @param parser Sender
+   @param key Key that was mapped
+ */
+- (void)parser:(YAJLParser *)parser didMapKey:(NSString *)key;
+
+/*!
+   Did add value.
+   @param parser Sender
+   @param value Value of type NSNull, NSString or NSNumber
+ */
+- (void)parser:(YAJLParser *)parser didAdd:(id)value;
 @end
 
 // MARK: - YAJLDocument
@@ -114,6 +152,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) id root;
 /// The current status of parsing
 @property (readonly, nonatomic) YAJLParserStatus parserStatus;
+/// The current status of parsing
+@property (readonly, nonatomic) NSArray<NSString *> *keyPath;
+@property (readonly, nonatomic) NSArray *keyStack;
+@property (readonly, nonatomic) NSString *_Nullable currentKeyPath;
+@property (readonly, nonatomic) YAJLDecoderCurrentType currentType;
 /// Delegate
 @property (weak, nonatomic) _Nullable id<YAJLDocumentDelegate> delegate;
 

@@ -41,6 +41,7 @@ NSInteger YAJLDocumentStackCapacity = 20;
 
 @property NSMutableArray *stack;
 @property NSMutableArray *keyStack;
+@property NSMutableArray<NSString *> *keyPath;
 
 @property YAJLDecoderCurrentType currentType;
 
@@ -84,6 +85,14 @@ NSInteger YAJLDocumentStackCapacity = 20;
 	return self;
 }
 
+- (NSString  * _Nullable )currentKeyPath {
+	if (_keyStack.count == 0) {
+		return nil;
+	}
+	
+	return [_keyStack componentsJoinedByString: @"."];
+}
+
 - (YAJLParserStatus)parse:(NSData *)data error:(NSError * *)error {
 	_parserStatus = [_parser parse:data];
 	if(error) {
@@ -98,6 +107,9 @@ NSInteger YAJLDocumentStackCapacity = 20;
 	switch(_currentType) {
 	case YAJLDecoderCurrentTypeArray: {
 		[_array addObject:value];
+		if([_delegate respondsToSelector: _cmd]) {
+			[_delegate parser:parser didAdd:value];
+		}
 		if([_delegate respondsToSelector:@selector(document:didAddObject:toArray:)]) {
 			[_delegate document:self didAddObject:value toArray:_array];
 		}
@@ -108,7 +120,9 @@ NSInteger YAJLDocumentStackCapacity = 20;
 		if(value) {
 			_dict[_key] = value;
 		}
-
+		if([_delegate respondsToSelector: _cmd]) {
+			[_delegate parser:parser didAdd:value];
+		}
 		if([_delegate respondsToSelector:@selector(document:didSetObject:forKey:inDictionary:)]) {
 			[_delegate document:self didSetObject:value forKey:_key inDictionary:_dict];
 		}
@@ -125,6 +139,9 @@ NSInteger YAJLDocumentStackCapacity = 20;
 - (void)parser:(YAJLParser *)parser didMapKey:(NSString *)key {
 	_key = key;
 	[_keyStack addObject:_key]; // Push
+	if([_delegate respondsToSelector: _cmd]) {
+		[_delegate parser:parser didMapKey:key];
+	}
 }
 
 - (void)_popKey {
@@ -144,6 +161,9 @@ NSInteger YAJLDocumentStackCapacity = 20;
 	[_stack addObject:dict]; // Push
 	_dict = dict;
 	_currentType = YAJLDecoderCurrentTypeDict;
+	if([_delegate respondsToSelector: _cmd]) {
+		[_delegate parserDidStartDictionary:parser];
+	}
 }
 
 - (void)parserDidEndDictionary:(YAJLParser *)parser {
@@ -153,6 +173,9 @@ NSInteger YAJLDocumentStackCapacity = 20;
 	[self parser:parser didAdd:value];
 	if([_delegate respondsToSelector:@selector(document:didAddDictionary:)]) {
 		[_delegate document:self didAddDictionary:dict];
+	}
+	if([_delegate respondsToSelector: _cmd]) {
+		[_delegate parserDidEndDictionary:parser];
 	}
 }
 
@@ -165,6 +188,9 @@ NSInteger YAJLDocumentStackCapacity = 20;
 	[_stack addObject:array]; // Push
 	_array = array;
 	_currentType = YAJLDecoderCurrentTypeArray;
+	if([_delegate respondsToSelector: _cmd]) {
+		[_delegate parserDidStartArray:parser];
+	}
 }
 
 - (void)parserDidEndArray:(YAJLParser *)parser {
@@ -174,6 +200,9 @@ NSInteger YAJLDocumentStackCapacity = 20;
 	[self parser:parser didAdd:value];
 	if([_delegate respondsToSelector:@selector(document:didAddArray:)]) {
 		[_delegate document:self didAddArray:array];
+	}
+	if([_delegate respondsToSelector: _cmd]) {
+		[_delegate parserDidEndArray:parser];
 	}
 }
 

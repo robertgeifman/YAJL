@@ -110,6 +110,7 @@ typedef NS_ENUM (NSUInteger, YAJLParserStatus) {
 	YAJLParserStatusNone = 0,
 	// Parsed OK
 	YAJLParserStatusOK = 1,
+	YAJLParserStatusInsufficientData = 2,
 	// Parser errored
 	YAJLParserStatusError = 3
 };
