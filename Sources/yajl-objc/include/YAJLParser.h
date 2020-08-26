@@ -142,7 +142,7 @@ typedef NS_ENUM (NSUInteger, YAJLParserStatus) {
  */
 @interface YAJLParser : NSObject
 @property (weak, nonatomic) id <YAJLParserDelegate> delegate;
-@property (readonly, strong, nonatomic) NSError *parserError;
+@property (readonly, strong, nonatomic) NSError * _Nullable parserError;
 @property (readonly, nonatomic) YAJLParserOptions parserOptions;
 @property (readonly, nonatomic) unsigned int bytesConsumed;
 
